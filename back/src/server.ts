@@ -1,9 +1,10 @@
 import express from "express";
 import { authRouter } from "./auth/authRouter";
 import { errosMiddleware } from "./common/middleware/error";
-import { db } from "./db/db";
 import { env } from "./env";
+import { PrismaClient } from "@prisma/client";
 
+const db = new PrismaClient();
 const app = express();
 app.use(express.json());
 

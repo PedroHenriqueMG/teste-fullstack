@@ -9,9 +9,25 @@ datasource db {
 }
 
 
-model Users{
-  id String @id
-  name String
-  email String @unique
+model Users {
+  id       String     @id
+  name     String
+  email    String     @unique
   password String
+  insights Insights[]
+}
+
+model Insights {
+  id      String    @id
+  title   String
+  content String
+  userId  String
+  user    Users     @relation(fields: [userId], references: [id])
+  tags    Tag[]     @relation("InsightTags")
+}
+
+model Tag {
+  id        String     @id
+  name      String     @unique
+  insights  Insights[] @relation("InsightTags")
 }
