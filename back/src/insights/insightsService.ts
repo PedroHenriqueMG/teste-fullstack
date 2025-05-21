@@ -26,6 +26,16 @@ class InsightsService {
 
     return insightRepository.getAllByUserId(userId);
   }
+
+  async getOneUserData(id: string) {
+    const insight = await insightRepository.getById(id);
+
+    if (!insight) {
+      throw new NotFoundError("Insight não encontrado");
+    }
+
+    return insight;
+  }
 }
 
 export const insightsService = new InsightsService();

@@ -21,6 +21,12 @@ class InsightsController {
     const insights = await insightsService.getAllUserData(userId);
     res.json(insights);
   }
+
+  async getOneInsight(req: Request, res: Response) {
+    const { id } = req.params;
+    const insight = await insightsService.getOneUserData(id);
+    res.json(insight);
+  }
 }
 
 export const insightsController = new InsightsController();

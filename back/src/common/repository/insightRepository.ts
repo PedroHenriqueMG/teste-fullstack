@@ -56,6 +56,17 @@ class InsightRepository {
       },
     });
   }
+
+  async getById(id: string) {
+    return this.db.insights.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        tags: true,
+      },
+    });
+  }
 }
 
 export const insightRepository = new InsightRepository(new PrismaClient());
