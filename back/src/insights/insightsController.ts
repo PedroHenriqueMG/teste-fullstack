@@ -27,6 +27,12 @@ class InsightsController {
     const insight = await insightsService.getOneUserData(id);
     res.json(insight);
   }
+
+  async deleteInsight(req: Request, res: Response) {
+    const { id } = req.params;
+    await insightsService.delete(id);
+    res.sendStatus(204);
+  }
 }
 
 export const insightsController = new InsightsController();

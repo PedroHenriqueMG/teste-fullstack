@@ -36,6 +36,16 @@ class InsightsService {
 
     return insight;
   }
+
+  async delete(id: string) {
+    const deletedInsight = await insightRepository.deleteById(id);
+
+    if (!deletedInsight) {
+      throw new NotFoundError("Insight não encontrado");
+    }
+
+    return;
+  }
 }
 
 export const insightsService = new InsightsService();

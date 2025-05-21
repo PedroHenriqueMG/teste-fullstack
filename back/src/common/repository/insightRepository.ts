@@ -67,6 +67,14 @@ class InsightRepository {
       },
     });
   }
+
+  async deleteById(id: string) {
+    return this.db.insights.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 export const insightRepository = new InsightRepository(new PrismaClient());
