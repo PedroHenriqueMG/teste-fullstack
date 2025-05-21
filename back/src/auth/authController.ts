@@ -19,8 +19,9 @@ class AuthController {
 
   async getUser(req: Request, res: Response) {
     const { userId } = req;
-    const loggedUser = await userService.getUserData(userId);
+    const userData = await userService.getUserData(userId);
 
+    const { password: _, ...loggedUser } = userData;
     res.json(loggedUser);
   }
 }

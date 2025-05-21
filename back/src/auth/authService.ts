@@ -57,8 +57,8 @@ class UserService {
     if (!userData) {
       throw new UnauthorizedError("Faça login para ter acesso a essa rota");
     }
-    const { password: _, ...loggedUser } = userData;
-    return loggedUser;
+
+    return userData;
   }
 }
 
