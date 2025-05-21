@@ -28,6 +28,25 @@ class InsighsService {
 
     return response.data;
   }
+
+  async getOne(id: string) {
+    const response = await api.get(`/insights/${id}`);
+    return response.data;
+  }
+
+  async update(id: string, data: CreateInsightProps) {
+    const response = await api.patch(`/insights/${id}`, {
+      title: data.title,
+      description: data.description,
+      tags: data.tags,
+    });
+    return response.data;
+  }
+
+  async delete(id: string) {
+    const response = await api.delete(`/insights/${id}`);
+    return response.data;
+  }
 }
 
 export const insighsService = new InsighsService();

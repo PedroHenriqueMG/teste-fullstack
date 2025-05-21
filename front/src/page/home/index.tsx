@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { EditInsightForm } from "@/components/forms/editInsightForm";
 
 type Tag = {
   id: string;
@@ -51,6 +52,19 @@ export const Home = () => {
   });
   const [count, setCount] = useState(0);
   const [createInsight, setCreateInsight] = useState(false);
+  const [editInsight, setEditInsight] = useState(false);
+  const [insightId, setInsightId] = useState("");
+
+  const handleDelete = async (id: string) => {
+    try {
+      await insighsService.delete(id);
+      setCount(count + 1);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        showAlertError(error.response?.data.message);
+      }
+    }
+  };
 
   const columns = [
     columnHelper.accessor("title", {
@@ -83,10 +97,15 @@ export const Home = () => {
       cell: ({ row }) => {
         return (
           <div className="flex justify-end gap-2">
-            <button>
+            <button
+              onClick={() => {
+                setInsightId(row.original.id);
+                setEditInsight(true);
+              }}
+            >
               <Pencil />
             </button>
-            <button type="button">
+            <button type="button" onClick={() => handleDelete(row.original.id)}>
               <Trash2 />
             </button>
           </div>
@@ -160,6 +179,16 @@ export const Home = () => {
         <DialogContent>
           <CreateInsightForm
             onClose={() => setCreateInsight(false)}
+            onCounter={() => setCount(count + 1)}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={editInsight} onOpenChange={setEditInsight}>
+        <DialogContent>
+          <EditInsightForm
+            id={insightId}
+            counter={count}
+            onClose={() => setEditInsight(false)}
             onCounter={() => setCount(count + 1)}
           />
         </DialogContent>
