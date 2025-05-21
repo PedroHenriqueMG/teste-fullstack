@@ -15,3 +15,9 @@ front:
 ```
 npm run dev
 ```
+
+## Uso de IA
+
+back: Copilot, cursor, e chatGpt, usando para criar a estrutura do db e arquitetura do projeto e logica de filtros.
+
+front: cursor, usado para criar a estilizaçao das paginas e componentes do front.
