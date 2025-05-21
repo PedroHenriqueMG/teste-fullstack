@@ -15,6 +15,12 @@ class InsightsController {
 
     res.status(201).json(insight);
   }
+
+  async getAllInsights(req: Request, res: Response) {
+    const { userId } = req;
+    const insights = await insightsService.getAllUserData(userId);
+    res.json(insights);
+  }
 }
 
 export const insightsController = new InsightsController();

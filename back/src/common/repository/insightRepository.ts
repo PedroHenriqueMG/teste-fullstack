@@ -43,6 +43,19 @@ class InsightRepository {
       },
     });
   }
+
+  async getAllByUserId(userId: string) {
+    return this.db.insights.findMany({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+      include: {
+        tags: true,
+      },
+    });
+  }
 }
 
 export const insightRepository = new InsightRepository(new PrismaClient());
