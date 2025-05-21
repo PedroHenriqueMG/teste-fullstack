@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { authRouter } from "./auth/authRouter";
 import { errosMiddleware } from "./common/middleware/error";
 import { env } from "./env";
@@ -7,6 +8,15 @@ import { insightsRouter } from "./insights/insightsRouter";
 
 const db = new PrismaClient();
 const app = express();
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 app.use("/auth", authRouter);
