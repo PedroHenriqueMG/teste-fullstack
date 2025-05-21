@@ -27,7 +27,7 @@ model Insights {
 }
 
 model Tag {
-  id        String     @id
+  id        String     @id 
   name      String     @unique
   insights  Insights[] @relation("InsightTags")
 }

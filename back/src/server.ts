@@ -3,12 +3,14 @@ import { authRouter } from "./auth/authRouter";
 import { errosMiddleware } from "./common/middleware/error";
 import { env } from "./env";
 import { PrismaClient } from "@prisma/client";
+import { insightsRouter } from "./insights/insightsRouter";
 
 const db = new PrismaClient();
 const app = express();
 app.use(express.json());
 
 app.use("/auth", authRouter);
+app.use("/insights", insightsRouter);
 
 db.$connect()
   .then(() => {
@@ -21,5 +23,5 @@ db.$connect()
 app.use(errosMiddleware);
 
 app.listen(env.PORT, () => {
-  console.log(`App listening on port ${env.PORT}`);
+  console.log(`App rodando na porta: ${env.PORT}`);
 });

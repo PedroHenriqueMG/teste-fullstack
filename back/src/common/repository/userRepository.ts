@@ -9,7 +9,14 @@ class UserRepository {
   }
 
   async create(user: User) {
-    return this.db.users.create({ data: user });
+    return this.db.users.create({
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      },
+    });
   }
 
   async findByEmail(email: string) {
