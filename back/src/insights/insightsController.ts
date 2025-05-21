@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateInsightDto } from "../common/dto/insightsDto";
+import { CreateInsightDto, UpdateInsightDto } from "../common/dto/insightsDto";
 import { insightsService } from "./insightsService";
 
 class InsightsController {
@@ -25,6 +25,13 @@ class InsightsController {
   async getOneInsight(req: Request, res: Response) {
     const { id } = req.params;
     const insight = await insightsService.getOneUserData(id);
+    res.json(insight);
+  }
+
+  async updateInsight(req: Request, res: Response) {
+    const { id } = req.params;
+    const body = UpdateInsightDto.parse(req.body);
+    const insight = await insightsService.update(id, body);
     res.json(insight);
   }
 

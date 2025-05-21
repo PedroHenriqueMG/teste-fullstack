@@ -6,4 +6,11 @@ export const CreateInsightDto = z.object({
   tags: z.array(z.string()).min(1, "As tags obrigatorias"),
 });
 
+export const UpdateInsightDto = z.object({
+  title: z.string().min(1, "O titulo obrigatorio").optional(),
+  description: z.string().min(1, "A descricao obrigatoria").optional(),
+  tags: z.array(z.string()).min(1, "As tags obrigatorias").optional(),
+});
+
 export type CreateInsightDto = z.infer<typeof CreateInsightDto>;
+export type UpdateInsightDto = z.infer<typeof UpdateInsightDto>;

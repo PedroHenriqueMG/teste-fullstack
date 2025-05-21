@@ -1,4 +1,4 @@
-import { CreateInsightDto } from "../common/dto/insightsDto";
+import { CreateInsightDto, UpdateInsightDto } from "../common/dto/insightsDto";
 import { Insight } from "../common/entities/insight";
 import { NotFoundError } from "../common/helpers/api-erros";
 import { insightRepository } from "../common/repository/insightRepository";
@@ -35,6 +35,24 @@ class InsightsService {
     }
 
     return insight;
+  }
+
+  async update(id: string, insight: UpdateInsightDto) {
+    const existInsight = await insightRepository.getById(id);
+
+    if (!existInsight) {
+      throw new NotFoundError("Insight não encontrado");
+    }
+
+    const updateInsight = {
+      title: insight.title ?? existInsight.title,
+      description: insight.description ?? existInsight.content,
+      tags: insight.tags ?? existInsight.tags.map((tag) => tag.name),
+      userId: existInsight.userId,
+    };
+
+    const updatedInsight = new Insight(updateInsight, id);
+    return insightRepository.upsert(updatedInsight);
   }
 
   async delete(id: string) {
