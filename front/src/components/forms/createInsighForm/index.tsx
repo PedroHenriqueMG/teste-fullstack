@@ -1,0 +1,140 @@
+import { showAlertError } from "@/components/alertError";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  createInsightFormSchema,
+  type CreateInsightFormProps,
+} from "@/interface/insightsSchema";
+import { insighsService } from "@/service/insights.service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { isAxiosError } from "axios";
+import { X } from "lucide-react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+
+type Props = {
+  onClose: () => void;
+  onCounter: () => void;
+};
+
+export const CreateInsightForm = ({ onClose, onCounter }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateInsightFormProps>({
+    resolver: zodResolver(createInsightFormSchema),
+  });
+  const [tags, setTags] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const value = input.value.trim();
+
+    if (e.key === "," && value !== "") {
+      e.preventDefault(); // evita inserir a vírgula no input
+      if (!tags.includes(value)) {
+        setTags((prev) => [...prev, value]);
+      }
+      input.value = "";
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setTags((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const onSubmit = async (data: CreateInsightFormProps) => {
+    try {
+      await insighsService.create({
+        description: data.description,
+        title: data.title,
+        tags: tags,
+      });
+      onCounter();
+      onClose();
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        const errorMessage = (error.response.data as { message: string })
+          .message;
+        showAlertError(errorMessage);
+      } else {
+        showAlertError("An unexpected error occurred");
+      }
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Novo Insight</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-2">
+              <Label htmlFor="title">Título</Label>
+              <Input
+                id="title"
+                {...register("title", { required: "Título é obrigatório" })}
+              />
+              {errors.title && (
+                <p className="text-sm text-red-500">{errors.title.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                {...register("description", {
+                  required: "Descrição é obrigatória",
+                })}
+              />
+              {errors.description && (
+                <p className="text-sm text-red-500">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tag">Tags</Label>
+              <Input
+                id="tag"
+                ref={inputRef}
+                onKeyDown={handleKeyDown}
+                placeholder="Digite uma tag e pressione vírgula"
+              />
+              <div className="flex flex-wrap gap-2 pt-2">
+                {tags.map((tag, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
+                    {tag}
+                    <button type="button" onClick={() => removeTag(index)}>
+                      <X className="w-3 h-3 cursor-pointer" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full">
+              Criar Insight
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

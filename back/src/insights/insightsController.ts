@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { CreateInsightDto, UpdateInsightDto } from "../common/dto/insightsDto";
+import {
+  CreateInsightDto,
+  GetInsightDto,
+  UpdateInsightDto,
+} from "../common/dto/insightsDto";
 import { insightsService } from "./insightsService";
 
 class InsightsController {
@@ -17,9 +21,16 @@ class InsightsController {
   }
 
   async getAllInsights(req: Request, res: Response) {
+    const filter = GetInsightDto.parse({
+      ...req.query,
+      page: Number(req.query.page),
+      limit: Number(req.query.limit),
+    });
+
     const { userId } = req;
-    const insights = await insightsService.getAllUserData(userId);
-    res.json(insights);
+    const result = await insightsService.getAllUserData(userId, filter);
+
+    res.json(result);
   }
 
   async getOneInsight(req: Request, res: Response) {

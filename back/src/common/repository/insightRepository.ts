@@ -44,17 +44,45 @@ class InsightRepository {
     });
   }
 
-  async getAllByUserId(userId: string) {
-    return this.db.insights.findMany({
-      where: {
-        user: {
-          id: userId,
+  async getAllByUserId(
+    userId: string,
+    options: { tag?: string; limit: number; offset: number }
+  ) {
+    const { tag, limit, offset } = options;
+
+    const whereClause = {
+      user: {
+        id: userId,
+      },
+      ...(tag && {
+        tags: {
+          some: {
+            name: tag,
+          },
         },
-      },
-      include: {
-        tags: true,
-      },
-    });
+      }),
+    };
+
+    const [data, total] = await this.db.$transaction([
+      this.db.insights.findMany({
+        where: whereClause,
+        include: {
+          tags: true,
+        },
+        skip: offset,
+        take: limit,
+      }),
+      this.db.insights.count({
+        where: whereClause,
+      }),
+    ]);
+
+    return {
+      insights: data,
+      total,
+      page: Math.floor(offset / limit) + 1,
+      limit,
+    };
   }
 
   async getById(id: string) {

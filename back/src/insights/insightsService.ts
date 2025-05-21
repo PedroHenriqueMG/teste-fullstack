@@ -1,4 +1,8 @@
-import { CreateInsightDto, UpdateInsightDto } from "../common/dto/insightsDto";
+import {
+  CreateInsightDto,
+  GetInsightDto,
+  UpdateInsightDto,
+} from "../common/dto/insightsDto";
 import { Insight } from "../common/entities/insight";
 import { NotFoundError } from "../common/helpers/api-erros";
 import { insightRepository } from "../common/repository/insightRepository";
@@ -17,14 +21,17 @@ class InsightsService {
     return createdInsight;
   }
 
-  async getAllUserData(userId: string) {
+  async getAllUserData(userId: string, filter: GetInsightDto) {
     const existUser = await userRepository.findById(userId);
 
     if (!existUser) {
-      throw new NotFoundError("Usuario não encontrado");
+      throw new NotFoundError("Usuário não encontrado");
     }
 
-    return insightRepository.getAllByUserId(userId);
+    const { page, limit, tag } = filter;
+    const offset = (page - 1) * limit;
+
+    return insightRepository.getAllByUserId(userId, { tag, limit, offset });
   }
 
   async getOneUserData(id: string) {
