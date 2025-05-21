@@ -1,9 +1,13 @@
+import { showAlertError } from "@/components/alertError";
+import { showAlertSuccess } from "@/components/alertSuccess";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useUser } from "@/hooks/useUser";
 import { signInSchema, type SignInSchema } from "@/interface/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isAxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -16,9 +20,22 @@ export const Signin = () => {
     resolver: zodResolver(signInSchema),
   });
   const navigate = useNavigate();
+  const { login } = useUser();
 
-  const onSubmit = (data: SignInSchema) => {
-    console.log(data);
+  const onSubmit = async (data: SignInSchema) => {
+    try {
+      await login(data);
+      showAlertSuccess("Login realizado com sucesso");
+      navigate("/");
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        const errorMessage = (error.response.data as { message: string })
+          .message;
+        showAlertError(errorMessage);
+      } else {
+        showAlertError("An unexpected error occurred");
+      }
+    }
   };
 
   return (

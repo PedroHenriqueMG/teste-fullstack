@@ -1,10 +1,14 @@
+import { showAlertError } from "@/components/alertError";
+import { showAlertSuccess } from "@/components/alertSuccess";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SignUpSchema } from "@/interface/authSchema";
 import { signUpSchema } from "@/interface/authSchema";
+import { authService } from "@/service/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isAxiosError } from "axios";
 import { useForm } from "react-hook-form";
 
 export const Signup = () => {
@@ -16,8 +20,19 @@ export const Signup = () => {
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = (data: SignUpSchema) => {
-    console.log(data);
+  const onSubmit = async (data: SignUpSchema) => {
+    try {
+      await authService.register(data);
+      showAlertSuccess("Cadastro realizado com sucesso");
+    } catch (error) {
+      if (isAxiosError(error) && error.response) {
+        const errorMessage = (error.response.data as { resposta: string })
+          .resposta;
+        showAlertError(errorMessage);
+      } else {
+        showAlertError("An unexpected error occurred");
+      }
+    }
   };
 
   return (
